@@ -133,26 +133,30 @@ public class MoodTracker {
         applyMoodColors(lineChart); // Apply custom colors for each mood
     }
 
-    private void applyMoodColors(LineChart<String, Number> lineChart) {
-        // Define mood colors
-        Map<String, String> moodColors = Map.of(
-                "Happy 😊", "#FFD700", // Gold
-                "Sad 😢", "#1E90FF", // DodgerBlue
-                "Neutral 😐", "#A9A9A9", // DarkGray
-                "Content", "#32CD32", // LimeGreen
-                "Stressed", "#FF6347", // Tomato
-                "Excited", "#FF4500", // OrangeRed
-                "Tired", "#8A2BE2", // BlueViolet
-                "Angry", "#DC143C" // Crimson
-        );
+ private void applyMoodColors(LineChart<String, Number> lineChart) {
+    Map<String, String> moodColors = Map.of(
+        "Happy 😊", "#FFD700",
+        "Sad 😢", "#1E90FF",
+        "Neutral 😐", "#A9A9A9",
+        "Content", "#32CD32",
+        "Stressed", "#FF6347",
+        "Excited", "#FF4500",
+        "Tired", "#8A2BE2",
+        "Angry", "#DC143C"
+    );
 
-        // Apply colors to the mood lines
-        lineChart.getData().forEach(series -> {
-            String mood = series.getName();
-            String color = moodColors.getOrDefault(mood, "#000000"); // Default to black if mood not found
-            series.getNode().setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 2px;");
+    for (XYChart.Series<String, Number> series : lineChart.getData()) {
+        String mood = series.getName();
+        String color = moodColors.getOrDefault(mood, "#000000");
+
+        // Use a listener to wait for the series node to be ready
+        series.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                newNode.setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 2px;");
+            }
         });
     }
+}
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
